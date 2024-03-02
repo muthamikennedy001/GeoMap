@@ -74,8 +74,14 @@ function Home() {
           </thead>
 
           <tbody>
-            {allMaps.map((map) => (
-              <Map1 key={map.id} id={map.id} name={map.name} map={map} />
+            {allMaps.map((map, index) => (
+              <Map1
+                key={map.id}
+                id={map.id}
+                name={map.name}
+                index={index}
+                map={map}
+              />
             ))}
           </tbody>
         </Table>

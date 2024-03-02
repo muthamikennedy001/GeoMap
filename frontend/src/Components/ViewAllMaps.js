@@ -1,4 +1,9 @@
-import { GoogleMap, LoadScript, Polygon } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  LoadScript,
+  OverlayView,
+  Polygon,
+} from "@react-google-maps/api";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -49,18 +54,38 @@ function ViewAllMaps() {
           zoom={9}
         >
           {geoState !== undefined
-            ? geoState.map((cords, index) => (
-                <Polygon
-                  key={index}
-                  path={cords.coordinates}
-                  options={{
-                    fillColor: "#2196F3",
-                    strokeColor: "#2196F3",
-                    fillOpacity: 0.5,
-                    strokeWeight: 2,
-                  }}
-                />
-              ))
+            ? geoState.map((cords, index) => {
+                return (
+                  <React.Fragment key={index}>
+                    <Polygon
+                      //key={index}
+                      path={cords.coordinates}
+                      options={{
+                        fillColor: "#2196F3",
+                        strokeColor: "#2196F3",
+                        fillOpacity: 0.5,
+                        strokeWeight: 2,
+                      }}
+                    />
+                    <OverlayView
+                      position={cords.coordinates[0]}
+                      mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                    >
+                      <div
+                        style={{
+                          background: "#203254",
+                          padding: "4px 4px",
+                          fontSize: "8px",
+                          color: "white",
+                          borderradius: "10px",
+                        }}
+                      >
+                        {index + 1}
+                      </div>
+                    </OverlayView>
+                  </React.Fragment>
+                );
+              })
             : null}
         </GoogleMap>
       </LoadScript>

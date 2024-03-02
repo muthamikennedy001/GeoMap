@@ -5,7 +5,7 @@ import ViewMap from "./ViewMap";
 import EditMap from "./EditMap";
 import { useHistory } from "react-router-dom";
 
-function Map1({ id, name, map }) {
+function Map1({ id, name, index, map }) {
   const history = useHistory();
   const [modalView, setModalView] = useState(false);
   const [modalEdit, setModalEdit] = useState(false);
@@ -143,7 +143,7 @@ function Map1({ id, name, map }) {
   return (
     <>
       <tr>
-        <td>{id}</td>
+        <td>{index + 1}</td>
         <td>{name}</td>
         <td>
           {checkMap && checkMap !== undefined ? (
