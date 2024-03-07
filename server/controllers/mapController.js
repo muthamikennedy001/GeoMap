@@ -143,3 +143,46 @@ module.exports.viewAllMaps = (req, res) => {
     }
   });
 };
+
+module.exports.addSoilData = (req, res) => {
+  // Extract data from request body
+  const {
+    parcelID,
+    temperature,
+    humidity,
+    moisture,
+    soilType,
+    pH,
+    nitrogenLevel,
+    potassiumLevel,
+    phosphorusLevel,
+  } = req.body;
+
+  // SQL query to insert soil data
+  const insertSql = `INSERT INTO soilData (parcelID, temperature, humidity, moisture, soilType, ph, nitrogenLevel, potassiumLevel, phosphorusLevel) 
+                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  // Execute the SQL query
+  db.query(
+    insertSql,
+    [
+      parcelID,
+      temperature,
+      humidity,
+      moisture,
+      soilType,
+      pH,
+      nitrogenLevel,
+      potassiumLevel,
+      phosphorusLevel,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("Error inserting soil data:", err);
+        return res.status(400).json({ msg: "Failed to add soil data" });
+      }
+      // If insertion is successful, send success response
+      res.status(200).json({ msg: "Soil data added successfully" });
+    }
+  );
+};

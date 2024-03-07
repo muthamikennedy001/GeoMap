@@ -68,7 +68,7 @@ function EditMap({
       .then((response) => {
         if (response) {
           console.log(response.data);
-          alert("Map Updated successfully");
+          alert(response.data.msg);
           refreshPage();
         }
       })

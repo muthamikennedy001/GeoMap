@@ -18,9 +18,9 @@ function ViewMap({ points, setModalView }) {
             <Polygon
               path={points}
               options={{
-                fillColor: "#2196F3",
+                fillColor: "#011c03",
                 strokeColor: "#2196F3",
-                fillOpacity: 0.5,
+                fillOpacity: 0.8,
                 strokeWeight: 2,
                 // editable: false,
                 // draggable: false,

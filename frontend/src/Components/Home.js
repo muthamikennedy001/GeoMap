@@ -16,10 +16,18 @@ function Home() {
       .then((response) => {
         if (response) {
           message = response.data.msg;
+          alert(message);
           history.push(`/map/${name}`);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((error) => {
+        if (error.response && error.response.status === 422) {
+          alert("Place already exists"); // Display error message for duplicate entry
+        } else {
+          console.error("Error adding place:", error);
+          // Handle other error cases if needed
+        }
+      });
   };
 
   const getAllMaps = () => {
