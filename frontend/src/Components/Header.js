@@ -6,11 +6,11 @@ const Header = () => {
     <header>
       <Navbar bg="light" expand="lg">
         <Container>
-          <Navbar.Brand href="/">Farm Maps</Navbar.Brand>
+          <Navbar.Brand href="/home">Farm Maps</Navbar.Brand>
           <Navbar.Toggle arial-controls="basic-navbar-nav"></Navbar.Toggle>
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="ms-auto">
-              <Nav.Link href="/"> Home</Nav.Link>
+              <Nav.Link href="/home"> Home</Nav.Link>
               <Nav.Link href="/viewAllMaps"> View All Maps</Nav.Link>
             </Nav>
           </Navbar.Collapse>

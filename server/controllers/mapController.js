@@ -186,3 +186,24 @@ module.exports.addSoilData = (req, res) => {
     }
   );
 };
+
+// mapController.js
+
+// Import any necessary modules and database connection
+
+// Function to check if data exists for the provided parcelID
+module.exports.checkParcel = (req, res) => {
+  const parcelID = req.params.parcelID; // Get parcelID from URL parameter
+
+  // Query your database to check if data exists for the provided parcelID
+  // Example SQL query:
+  const checkSql = "SELECT COUNT(*) AS count FROM soilData WHERE parcelID = ?";
+  db.query(checkSql, [parcelID], (err, result) => {
+    if (err) {
+      console.error("Error checking parcel:", err);
+      return res.status(500).json({ error: "Internal server error" });
+    }
+    const exists = result[0].count > 0; // Check if count is greater than 0
+    res.status(200).json({ exists: exists }); // Send response indicating if data exists
+  });
+};

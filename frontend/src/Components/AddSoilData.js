@@ -19,36 +19,47 @@ function AddSoilData() {
     e.preventDefault();
 
     axios
-      .post("http://localhost:2000/api/addSoilData", {
-        parcelID: parcelID,
-        temperature: temperature,
-        humidity: humidity,
-        moisture: moisture,
-        soilType: soilType,
-        pH: pH,
-        nitrogenLevel: nitrogenLevel,
-        potassiumLevel: potassiumLevel,
-        phosphorusLevel: phosphorusLevel,
-      })
+      .get(`http://localhost:2000/api/checkParcel/${parcelID}`)
       .then((response) => {
-        if (response) {
-          message = response.data.msg; // Set message state to display success message
-          // Reset form fields
-          setParcelID("");
-          setTemperature("");
-          setHumidity("");
-          setMoisture("");
-          setSoilType("");
-          setPH("");
-          setNitrogenLevel("");
-          setPotassiumLevel("");
-          setPhosphorusLevel("");
-          e.target.reset();
+        if (response.data.exists) {
+          alert(
+            "Data for this parcel already exists. Please enter a different parcel ID."
+          );
+        } else {
+          // If data doesn't exist, proceed with inserting new data
+          axios
+            .post("http://localhost:2000/api/addSoilData", {
+              parcelID: parcelID,
+              temperature: temperature,
+              humidity: humidity,
+              moisture: moisture,
+              soilType: soilType,
+              pH: pH,
+              nitrogenLevel: nitrogenLevel,
+              potassiumLevel: potassiumLevel,
+              phosphorusLevel: phosphorusLevel,
+            })
+            .then((response) => {
+              if (response) {
+                message = response.data.msg; // Set message state to display success message
+                // Reset form fields
+                setParcelID("");
+                setTemperature("");
+                setHumidity("");
+                setMoisture("");
+                setSoilType("");
+                setPH("");
+                setNitrogenLevel("");
+                setPotassiumLevel("");
+                setPhosphorusLevel("");
+                e.target.reset();
+              }
+            })
+            .catch((err) => console.log(err));
         }
       })
-      .catch((err) => console.log(err));
+      .catch((error) => console.log(error));
   };
-
   return (
     <div class="h-screen md:flex">
       <div class="relative overflow-hidden md:flex w-1/2 bg-green-50 justify-around items-center hidden">

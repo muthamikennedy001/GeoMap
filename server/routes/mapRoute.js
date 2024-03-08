@@ -12,6 +12,7 @@ const {
   deleteMapName,
   viewAllMaps,
   addSoilData,
+  checkParcel,
 } = require("../controllers/mapController");
 
 router.post("/addName", addName);
@@ -25,5 +26,6 @@ router.get("/getAllCoordinateMaps", getAllCoordinateMaps);
 router.delete("/deleteMapName/:id", deleteMapName);
 router.get("/viewAllMaps", viewAllMaps);
 router.post("/addSoilData", addSoilData);
+router.get("/checkParcel/:parcelID", checkParcel);
 
 module.exports = router;
