@@ -6,22 +6,26 @@ import Home from "./Components/Home";
 import AddGeoMap from "./Components/AddGeoMap";
 import ViewAllMaps from "./Components/ViewAllMaps";
 import AddSoilData from "./Components/AddSoilData";
-import SignupPage from "./pages/SignupPage";
-import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/Register";
+import LoginPage from "./pages/Login";
+import LogOut from "./pages/logout";
+import DashBoard from "./pages/Home";
 
 function App() {
   return (
     <div className="App">
       <Router>
-        <Header />
+        {/* <Header /> */}
         <Switch>
           <Route exact path="/" component={LoginPage} />
           <Route path="/map/:name" component={AddGeoMap} />
           <Route path="/viewAllMaps" component={ViewAllMaps} />
           <Route path="/AddSoilData" component={AddSoilData} />
           <Route path="/LoginPage" component={LoginPage} />
-          <Route path="/SignupPage" component={SignupPage} />
+          <Route path="/signup" component={SignupPage} />
           <Route path="/home" component={Home} />
+          <Route path="/dashboard/:type" component={DashBoard} />
+          <Route path="/logout" component={LogOut} />
         </Switch>
       </Router>
     </div>

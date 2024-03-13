@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { signupFields } from "../constants/formFields";
+import { signupFields } from "../constants/FormFields";
 import FormAction from "./FormAction";
 import Input from "./Input";
 
@@ -21,8 +21,39 @@ export default function Signup() {
   };
 
   //handle Signup API Integration here
-  const createAccount = () => {};
+  const createAccount = async () => {
+    try {
+      // Make an API call to your backend with the user's credentials
+      const response = await fetch(
+        "http://127.0.0.1:2000/api/user/generateToken",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(signupState), // Assuming loginState contains user credentials
+        }
+      );
 
+      // Assuming your backend returns JSON response
+      const data = await response.json();
+
+      // Check if the login was successful based on the response
+      if (response.ok) {
+        // Handle successful login, e.g., redirect to dashboard
+        console.log("Login successful");
+        sessionStorage.setItem("token", data.token);
+        sessionStorage.setItem("username", data.data);
+        window.location.href = data.red;
+      } else {
+        // Handle login failure, e.g., display error message
+        console.error("Login failed:", data.msg);
+      }
+    } catch (error) {
+      // Handle network errors or other exceptions
+      // console.error('Error during login:', error);
+    }
+  };
   return (
     <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
       <div className="">
