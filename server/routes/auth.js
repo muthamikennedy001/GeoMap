@@ -18,11 +18,11 @@ function blacklistToken(token) {
   blacklistedTokens.add(token);
 }
 
-async function createFarmer(username, email, password, res) {
+async function createFarmer(username, idno, password, res) {
   try {
     const user = await Farmer.create({
       username: username,
-      email: email,
+      idno: idno,
       password: password,
     });
     console.log("User created:", user.toJSON());
@@ -32,11 +32,11 @@ async function createFarmer(username, email, password, res) {
   }
 }
 
-async function createOfficer(username, email, password, res) {
+async function createOfficer(username, idno, password, res) {
   try {
     const user = await Officer.create({
       username: username,
-      email: email,
+      idno: idno,
       password: password,
     });
     console.log("User created:", user.toJSON());
@@ -46,11 +46,11 @@ async function createOfficer(username, email, password, res) {
   }
 }
 
-async function createDistributor(username, email, password, res) {
+async function createDistributor(username, idno, password, res) {
   try {
     const user = await Distributor.create({
       username: username,
-      email: email,
+      idno: idno,
       password: password,
     });
     console.log("User created:", user.toJSON());
@@ -60,16 +60,16 @@ async function createDistributor(username, email, password, res) {
   }
 }
 
-async function findUser(email, password, res, req) {
+async function findUser(idno, password, res, req) {
   // try {
   const farmer = await Farmer.findOne({
-    where: { email: email }, // Query condition
+    where: { idno: idno }, // Query condition
   });
   const officer = await Officer.findOne({
-    where: { email: email }, // Query condition
+    where: { idno: idno }, // Query condition
   });
   const distributor = await Distributor.findOne({
-    where: { email: email }, // Query condition
+    where: { idno: idno }, // Query condition
   });
   if (farmer) {
     console.log("User found:", farmer.toJSON());
@@ -82,7 +82,7 @@ async function findUser(email, password, res, req) {
         try {
           let jwtSecretKey = process.env.JWT_SECRET_KEY;
           const token = await jwt.sign({ userId: farmer.id }, jwtSecretKey);
-          req.session.token = token;
+
           // console.log(req.session.token)
           return res.send({
             red: "/dashboard",
@@ -108,8 +108,8 @@ async function findUser(email, password, res, req) {
         try {
           let jwtSecretKey = process.env.JWT_SECRET_KEY;
           const token = await jwt.sign({ userId: officer.id }, jwtSecretKey);
-          req.session.token = token;
-          // console.log(req.session.token)
+          //req.session.token = token;
+          //console.log(req.session.token);
           return res.send({
             red: "/dashboard",
             type: "officer",
@@ -117,7 +117,10 @@ async function findUser(email, password, res, req) {
             data: officer.username,
           });
         } catch (error) {
-          return res.status(500).json({ msg: "Internal server error" });
+          console.error("Error:", error); // Log the error to the console for debugging purposes
+          return res
+            .status(500)
+            .json({ msg: "Internal server error", error: error.message });
         }
       } else {
         return res.status(401).json({ msg: "Wrong password entered" });
@@ -137,7 +140,7 @@ async function findUser(email, password, res, req) {
             { userId: distributor.id },
             jwtSecretKey
           );
-          req.session.token = token;
+          //req.session.token = token;
           // console.log(req.session.token)
           return res.send({
             red: "/dashboard",
@@ -155,7 +158,7 @@ async function findUser(email, password, res, req) {
   } else {
     return res
       .status(401)
-      .json({ msg: "Account with that email was not found" });
+      .json({ msg: "Account with that ID Number was not found" });
   }
   // } catch (error) {
   //   console.log("hello")
@@ -181,16 +184,16 @@ router.post("/user/farmer/generateToken", async (req, res) => {
 
   try {
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
-    const { username, email, password } = req.body;
+    const { username, idno, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     data = {
       username: username,
-      email: email,
+      idno: idno,
       password: hashedPassword,
     };
     const token = jwt.sign(data, jwtSecretKey, { expiresIn: "1h" });
     console.log(token);
-    await createFarmer(username, email, hashedPassword);
+    await createFarmer(username, idno, hashedPassword);
 
     res.json({
       token: token,
@@ -209,16 +212,16 @@ router.post("/user/officer/generateToken", async (req, res) => {
 
   try {
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
-    const { username, email, password } = req.body;
+    const { username, idno, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     data = {
       username: username,
-      email: email,
+      idno: idno,
       password: hashedPassword,
     };
     const token = jwt.sign(data, jwtSecretKey, { expiresIn: "1h" });
     console.log(token);
-    await createOfficer(username, email, hashedPassword);
+    await createOfficer(username, idno, hashedPassword);
 
     res.json({
       token: token,
@@ -237,16 +240,16 @@ router.post("/user/distributor/generateToken", async (req, res) => {
 
   try {
     let jwtSecretKey = process.env.JWT_SECRET_KEY;
-    const { username, email, password } = req.body;
+    const { username, idno, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     data = {
       username: username,
-      email: email,
+      idno: idno,
       password: hashedPassword,
     };
     const token = jwt.sign(data, jwtSecretKey, { expiresIn: "1h" });
     console.log(token);
-    await createDistributor(username, email, hashedPassword);
+    await createDistributor(username, idno, hashedPassword);
 
     res.json({
       token: token,
@@ -302,8 +305,8 @@ router.get("/user/validateToken", (req, res) => {
 
 router.post("/user/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
-    return findUser(email, password, res, req);
+    const { idno, password } = req.body;
+    return findUser(idno, password, res, req);
   } catch (error) {
     return res.status(401).send("missing credentials");
   }

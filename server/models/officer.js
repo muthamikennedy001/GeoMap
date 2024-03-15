@@ -8,8 +8,8 @@ const Officer = sequelize.define("Officer", {
     allowNull: false,
     unique: true,
   },
-  email: {
-    type: DataTypes.STRING,
+  idno: {
+    type: DataTypes.NUMBER,
     allowNull: false,
     unique: true,
   },

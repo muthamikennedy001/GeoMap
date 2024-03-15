@@ -42,8 +42,8 @@ export default function Signup() {
       if (response.ok) {
         // Handle successful login, e.g., redirect to dashboard
         console.log("Login successful");
-        sessionStorage.setItem("token", data.token);
-        sessionStorage.setItem("username", data.data);
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("username", data.data);
         window.location.href = data.red;
       } else {
         // Handle login failure, e.g., display error message

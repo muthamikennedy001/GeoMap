@@ -42,7 +42,7 @@ export default function Login() {
       if (response.ok) {
         // Handle successful login, e.g., redirect to dashboard
         console.log("Login successful");
-        sessionStorage.setItem("token", data.token);
+        localStorage.setItem("token", data.token);
         window.location.href = data.red + "/" + data.type;
       } else {
         // Handle login failure, e.g., display error message

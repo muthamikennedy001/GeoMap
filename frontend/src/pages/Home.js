@@ -20,7 +20,7 @@ export default function DashBoard() {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
@@ -30,7 +30,7 @@ export default function DashBoard() {
         console.log(data);
         sessionStorage.setItem("token", data.token);
         setauthState(data.authenticated);
-        setData(sessionStorage.getItem("username"));
+        setData(localStorage.getItem("username"));
         console.log(data1.data);
       } catch (error) {
         // Handle network errors or other exceptions

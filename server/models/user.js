@@ -8,8 +8,8 @@ const Farmer = sequelize.define("Farmer", {
     allowNull: false,
     unique: true,
   },
-  email: {
-    type: DataTypes.STRING,
+  idno: {
+    type: DataTypes.NUMBER,
     allowNull: false,
     unique: true,
   },

@@ -14,14 +14,14 @@ export default function LogOut() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
 
         // Assuming your backend returns JSON response
         const data = await response.json();
         console.log(data);
-        sessionStorage.removeItem("token");
+        localStorage.removeItem("token");
         window.location.href = "/";
       } catch (error) {
         // Handle network errors or other exceptions
