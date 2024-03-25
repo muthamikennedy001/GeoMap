@@ -4,7 +4,9 @@ import axios from "axios";
 import { useHistory } from "react-router-dom";
 import Map1 from "./Map1";
 
-function Home() {
+function FarmerListing(props) {
+  const idno = props.idno;
+  console.log("farmers specific details idno", idno);
   const [allMaps, setAllMaps] = useState([]);
   const history = useHistory();
   const [name, setName] = useState();
@@ -12,7 +14,7 @@ function Home() {
 
   const addName = () => {
     axios
-      .post("http://localhost:2000/api/addName", { name: name })
+      .post("http://localhost:2000/api/addName", { name: name, idno: idno })
       .then((response) => {
         if (response) {
           message = response.data.msg;
@@ -32,7 +34,7 @@ function Home() {
 
   const getAllMaps = () => {
     axios
-      .get("http://localhost:2000/api/getAllMaps")
+      .get(`http://localhost:2000/api/getAllFarmersMaps/${idno}`)
       .then((response) => {
         if (response) {
           setAllMaps(response.data);
@@ -72,7 +74,7 @@ function Home() {
       <br />
       <div class=" mt-4 bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
         <h3 class="text-xl leading-none font-bold text-gray-900 mb-10">
-          Farm Listing for farmer
+          Farm Listing for Farmer Id No: {idno}
         </h3>
         <div class="block w-full overflow-x-auto">
           <table class="items-center w-full bg-transparent border-collapse">
@@ -107,4 +109,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default FarmerListing;

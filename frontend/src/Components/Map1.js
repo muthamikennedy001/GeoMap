@@ -4,6 +4,7 @@ import Modal from "react-modal";
 import ViewMap from "./ViewMap";
 import EditMap from "./EditMap";
 import { useHistory } from "react-router-dom";
+import { Link } from "react-router-dom/cjs/react-router-dom";
 
 function Map1({ id, name, index, map }) {
   const history = useHistory();
@@ -72,7 +73,7 @@ function Map1({ id, name, index, map }) {
     setTimeout(() => {
       if (!unmounted) {
         axios
-          .post("http://localhost:2000/api/allGeoMapInfo", { parentId: map.id })
+          .post("http://localhost:2000/api/allGeoMapInfo", { mapId: map.id })
           .then((response) => {
             if (
               response.data.result.length > 0 &&
@@ -116,7 +117,7 @@ function Map1({ id, name, index, map }) {
 
   let checkMap;
   var newArray = allMaps.map((item) => {
-    if (item.parentId === map.id) {
+    if (item.mapId === map.id) {
       checkMap = map.id;
     }
   });
@@ -142,20 +143,52 @@ function Map1({ id, name, index, map }) {
 
   return (
     <>
-      <tr>
-        <td>{index + 1}</td>
-        <td>{name}</td>
-        <td>
+      <tr class="text-gray-500">
+        <td class="border-t-0 px-4 align-middle text-sm font-normal whitespace-nowrap p-4 text-left">
+          {index + 1}
+        </td>
+        <td class="border-t-0 px-4 align-middle text-xs font-medium text-gray-900 whitespace-nowrap p-4">
+          {name}
+        </td>
+        <td class="border-t-0 px-4 align-middle text-xs whitespace-nowrap p-4">
           {checkMap && checkMap !== undefined ? (
             <>
-              <button onClick={openViewModal}>View</button>
-              <button onClick={openEditModal}>Edit</button>
-              <button onClick={() => deleteMap(map.id)}>Remove</button>
+              <button
+                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                onClick={openViewModal}
+              >
+                View
+              </button>
+              <button
+                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                onClick={openEditModal}
+              >
+                Edit
+              </button>
+              <button
+                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                onClick={() => deleteMap(map.id)}
+              >
+                Remove
+              </button>
+              <button class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">
+                <Link to={`/AddParcelData/${map.id}`}>Soil Data</Link>
+              </button>
             </>
           ) : (
             <>
-              <button onClick={() => addMap(map.name)}>Add New</button>
-              <button onClick={() => deleteMapName(map.id)}>Delete</button>
+              <button
+                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                onClick={() => addMap(map.name)}
+              >
+                Add New
+              </button>
+              <button
+                class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                onClick={() => deleteMapName(map.id)}
+              >
+                Delete
+              </button>
             </>
           )}
         </td>

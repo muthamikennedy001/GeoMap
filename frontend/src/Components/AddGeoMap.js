@@ -54,9 +54,10 @@ function AddGeoMap() {
   const saveMap = async () => {
     await axios
       .post("http://localhost:2000/api/addMap", {
-        parentId: mapInfo.data.result[0].id,
+        mapId: mapInfo.data.result[0].id,
         coordinates: new_path,
       })
+
       .then((response) => {
         if (response) {
           alert(`${response.data.msg}`);
@@ -82,10 +83,13 @@ function AddGeoMap() {
         point={(paths) => setState({ paths })}
       />
       {paths && paths.length > 1 ? (
-        <button ref={btnRef} onClick={saveMap}>
-          Save Map
-        </button>
+        <>
+          <button ref={btnRef} onClick={saveMap}>
+            Save Map
+          </button>
+        </>
       ) : null}
+
       <button onClick={() => history.push("/")}>Go Back</button>
     </div>
   );

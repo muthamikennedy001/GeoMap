@@ -29,7 +29,7 @@ function AddSoilData() {
           // If data doesn't exist, proceed with inserting new data
           axios
             .post("http://localhost:2000/api/addSoilData", {
-              parcelID: parcelID,
+              farmParcelId: parcelID,
               temperature: temperature,
               humidity: humidity,
               moisture: moisture,

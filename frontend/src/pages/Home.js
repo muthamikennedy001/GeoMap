@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 export default function DashBoard() {
   const [authState, setauthState] = useState(false);
   const [data, setData] = useState();
+  const [idno, setIdno] = useState();
   const { type } = useParams();
   const data1 = type;
   useEffect(() => {
@@ -31,7 +32,9 @@ export default function DashBoard() {
         sessionStorage.setItem("token", data.token);
         setauthState(data.authenticated);
         setData(localStorage.getItem("username"));
-        console.log(data1.data);
+        setIdno(localStorage.getItem("idno"));
+        console.log(localStorage.getItem("username"));
+        console.log(localStorage.getItem("idno"));
       } catch (error) {
         // Handle network errors or other exceptions
         // console.error('Error during login:', error);

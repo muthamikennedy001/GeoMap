@@ -43,6 +43,7 @@ export default function Signup() {
         // Handle successful login, e.g., redirect to dashboard
         console.log("Login successful");
         localStorage.setItem("token", data.token);
+        localStorage.setItem("idno", data.idno);
         localStorage.setItem("username", data.data);
         window.location.href = data.red;
       } else {

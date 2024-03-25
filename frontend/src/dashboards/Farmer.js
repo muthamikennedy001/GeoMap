@@ -1,10 +1,86 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import ViewAllFarmersMaps from "../Components/ViewAllFarmersMaps";
+import StoresNotFound from "../Components/StoresNotFound";
 
 export default function FarmerDash() {
+  const [soilData, setSoilData] = useState(null);
+  const [farmerIdNo, setFarmerIdNo] = useState("");
+  const [stores, setStores] = useState([]);
+  const [storesId, setStoresId] = useState("");
+  const [parcel, setParcel] = useState([]);
+  const [farmParcelId, setFarmParcelId] = useState("");
+  const [mapId, setMapId] = useState("");
+  const apiUrl = "http://127.0.0.1:2000/api/";
+
+  console.log(localStorage.getItem("username"));
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  useEffect(() => {
+    // Get farmer ID from localStorage and set it to state
+    const idNo = localStorage.getItem("idno");
+    if (idNo) {
+      setFarmerIdNo(localStorage.getItem("idno"));
+    }
+  }, []); // Empty dependency array to run once on mount
+
+  console.log(farmerIdNo);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const storeResponse = await axios.get(`${apiUrl}/stores/${farmerIdNo}`);
+        // Handle successful response
+        console.log("Farmer and Store:", storeResponse.data[0]);
+
+        // Set store data to state
+        setStores(storeResponse.data[0]);
+
+        // Set store ID to state
+        setStoresId(storeResponse.data[0].id);
+        setMapId(storeResponse.data[0].id);
+
+        // Fetch parcel data after getting store data
+        const parcelResponse = await axios.get(
+          `${apiUrl}/parcel/${storeResponse.data[0].id}`
+        );
+        // Handle successful response
+        console.log("Farm Parcels:", parcelResponse.data);
+
+        setParcel(parcelResponse.data);
+        console.log(parcel);
+        setFarmParcelId(parcelResponse.data.farmParcelId);
+        console.log(parcelResponse.data.farmParcelId);
+
+        // Fetch soil data after getting parcel data
+        const soilDataResponse = await axios.get(
+          `${apiUrl}/soildata/${parcelResponse.data.farmParcelId}`
+        );
+        // Exclude unwanted fields from the data
+        const filteredData = Object.entries(soilDataResponse.data)
+          .filter(
+            ([key]) =>
+              key !== "createdAt" &&
+              key !== "updatedAt" &&
+              key !== "soilDataId" &&
+              key !== "farmParcelId"
+          )
+          .reduce((obj, [key, value]) => ({ ...obj, [key]: value }), {});
+        setSoilData(filteredData);
+      } catch (error) {
+        // Handle errors for all API calls
+        console.error("Error fetching data:", error);
+        // Further error handling if needed
+      }
+    };
+
+    fetchData();
+  }, [farmerIdNo]); // Dependency on farmerIdNo ensures this useEffect runs when farmerIdNo changes
+
   return (
     <>
       <div>
@@ -155,10 +231,7 @@ export default function FarmerDash() {
                             <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                           </svg>
                           <span class="ml-3 flex-1 whitespace-nowrap">
-                            Kanban
-                          </span>
-                          <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
-                            Pro
+                            My Farms
                           </span>
                         </a>
                       </li>
@@ -178,10 +251,7 @@ export default function FarmerDash() {
                             <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
                           </svg>
                           <span class="ml-3 flex-1 whitespace-nowrap">
-                            Inbox
-                          </span>
-                          <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
-                            Pro
+                            Soil Data
                           </span>
                         </a>
                       </li>
@@ -203,7 +273,7 @@ export default function FarmerDash() {
                             ></path>
                           </svg>
                           <span class="ml-3 flex-1 whitespace-nowrap">
-                            Users
+                            Get Recommendations
                           </span>
                         </a>
                       </li>
@@ -225,47 +295,12 @@ export default function FarmerDash() {
                             ></path>
                           </svg>
                           <span class="ml-3 flex-1 whitespace-nowrap">
-                            Products
+                            Orders
                           </span>
                         </a>
                       </li>
                     </ul>
                     <div class="space-y-2 pt-2">
-                      <a
-                        href="#"
-                        target="_blank"
-                        class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2"
-                      >
-                        <svg
-                          class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
-                          <path
-                            fill-rule="evenodd"
-                            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
-                            clip-rule="evenodd"
-                          ></path>
-                        </svg>
-                        <span class="ml-3">Documentation</span>
-                      </a>
-                      <a
-                        href="#"
-                        target="_blank"
-                        class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2"
-                      >
-                        <svg
-                          class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
-                        </svg>
-                        <span class="ml-3">Components</span>
-                      </a>
                       <a
                         href="#"
                         target="_blank"
@@ -359,10 +394,7 @@ export default function FarmerDash() {
                               <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                             </svg>
                             <span class="ml-3 flex-1 whitespace-nowrap">
-                              Kanban
-                            </span>
-                            <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
-                              Pro
+                              My Farms
                             </span>
                           </a>
                         </li>
@@ -382,10 +414,7 @@ export default function FarmerDash() {
                               <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
                             </svg>
                             <span class="ml-3 flex-1 whitespace-nowrap">
-                              Inbox
-                            </span>
-                            <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
-                              Pro
+                              Soil Data
                             </span>
                           </a>
                         </li>
@@ -407,7 +436,7 @@ export default function FarmerDash() {
                               ></path>
                             </svg>
                             <span class="ml-3 flex-1 whitespace-nowrap">
-                              Users
+                              Get Recommendations
                             </span>
                           </a>
                         </li>
@@ -429,13 +458,13 @@ export default function FarmerDash() {
                               ></path>
                             </svg>
                             <span class="ml-3 flex-1 whitespace-nowrap">
-                              Products
+                              Orders
                             </span>
                           </a>
                         </li>
                       </ul>
                       <div class="space-y-2 pt-2">
-                        <a
+                        {/* <a
                           href="#"
                           target="_blank"
                           class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2"
@@ -469,7 +498,7 @@ export default function FarmerDash() {
                             <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
                           </svg>
                           <span class="ml-3">Components</span>
-                        </a>
+                        </a> */}
                         <a
                           href="#"
                           target="_blank"
@@ -512,13 +541,10 @@ export default function FarmerDash() {
                     <div class="flex items-center justify-between mb-4">
                       <div class="flex-shrink-0">
                         <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
-                          $45,385
+                          Farm Parcel Maps
                         </span>
-                        <h3 class="text-base font-normal text-gray-500">
-                          Sales this week
-                        </h3>
                       </div>
-                      <div class="flex items-center justify-end flex-1 text-green-500 text-base font-bold">
+                      {/* <div class="flex items-center justify-end flex-1 text-green-500 text-base font-bold">
                         12.5%
                         <svg
                           class="w-5 h-5"
@@ -532,147 +558,71 @@ export default function FarmerDash() {
                             clip-rule="evenodd"
                           ></path>
                         </svg>
-                      </div>
+                      </div> */}
                     </div>
-                    <div id="main-chart"></div>
+                    <div id="main-chart">
+                      {stores.length === 0 ? (
+                        <StoresNotFound />
+                      ) : (
+                        <ViewAllFarmersMaps mapId={mapId} />
+                      )}
+                    </div>
                   </div>
-                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
-                    <div class="mb-4 flex items-center justify-between">
+                  <div className="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+                    <div className="mb-4 flex items-center justify-between">
                       <div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">
-                          Latest Transactions
+                        <h3 className="text-xl font-bold text-gray-900 mb-2">
+                          Soil Data For Farm Parcel
                         </h3>
-                        <span class="text-base font-normal text-gray-500">
+                        {/* <span className="text-base font-normal text-gray-500">
                           This is a list of latest transactions
-                        </span>
+                        </span> */}
                       </div>
-                      <div class="flex-shrink-0">
+                      <div className="flex-shrink-0">
                         <a
                           href="#"
-                          class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg p-2"
+                          className="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg p-2"
                         >
-                          View all
+                          Get Recommendations
                         </a>
                       </div>
                     </div>
-                    <div class="flex flex-col mt-8">
-                      <div class="overflow-x-auto rounded-lg">
-                        <div class="align-middle inline-block min-w-full">
-                          <div class="shadow overflow-hidden sm:rounded-lg">
-                            <table class="min-w-full divide-y divide-gray-200">
-                              <thead class="bg-gray-50">
+                    <div className="flex flex-col mt-8">
+                      <div className="overflow-x-auto rounded-lg">
+                        <div className="align-middle inline-block min-w-full">
+                          <div className="shadow overflow-hidden sm:rounded-lg">
+                            <table className="min-w-full divide-y divide-gray-200">
+                              <thead className="bg-gray-50">
                                 <tr>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Transaction
+                                  <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Soil Property
                                   </th>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Date & Time
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
+                                  <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Amount
                                   </th>
                                 </tr>
                               </thead>
-                              <tbody class="bg-white">
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      Bonnie Green
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 23 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2300
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment refund to{" "}
-                                    <span class="font-semibold">#00910</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 23 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    -$670
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment failed from{" "}
-                                    <span class="font-semibold">#087651</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 18 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $234
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment from{" "}
-                                    <span class="font-semibold">Lana Byrd</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 15 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $5000
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">Jese Leos</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 15 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2300
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      THEMESBERG LLC
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 11 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $560
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      Lana Lysle
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 6 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $1437
-                                  </td>
-                                </tr>
+                              <tbody className="bg-white">
+                                {soilData &&
+                                  Object.entries(soilData).map(
+                                    ([property, amount], index) => (
+                                      <tr
+                                        key={index}
+                                        className={
+                                          index % 2 === 0
+                                            ? "bg-white"
+                                            : "bg-gray-50"
+                                        }
+                                      >
+                                        <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
+                                          {property}
+                                        </td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                          {amount}
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
                               </tbody>
                             </table>
                           </div>
@@ -681,7 +631,7 @@ export default function FarmerDash() {
                     </div>
                   </div>
                 </div>
-                <div class="mt-4 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {/* <div class="mt-4 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                     <div class="flex items-center">
                       <div class="flex-shrink-0">
@@ -763,12 +713,12 @@ export default function FarmerDash() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
                 <div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
                   <div class="bg-white shadow rounded-lg mb-4 p-4 sm:p-6 h-full">
                     <div class="flex items-center justify-between mb-4">
                       <h3 class="text-xl font-bold leading-none text-gray-900">
-                        Latest Customers
+                        My Orders
                       </h3>
                       <a
                         href="#"
@@ -1065,7 +1015,7 @@ export default function FarmerDash() {
             </main>
             <footer class="bg-white md:flex md:items-center md:justify-between shadow rounded-lg p-4 md:p-6 xl:p-8 my-6 mx-4">
               <ul class="flex items-center flex-wrap mb-6 md:mb-0">
-                <li>
+                {/* <li>
                   <a
                     href="#"
                     class="text-sm font-normal text-gray-500 hover:underline mr-4 md:mr-6"
@@ -1096,7 +1046,7 @@ export default function FarmerDash() {
                   >
                     Cookie Policy
                   </a>
-                </li>
+                </li> */}
                 <li>
                   <a
                     href="#"
@@ -1178,7 +1128,7 @@ export default function FarmerDash() {
             <p class="text-center text-sm text-gray-500 my-10">
               &copy; 2024{" "}
               <a href="#" class="hover:underline" target="_blank">
-                iDL
+                Tripple M Devs
               </a>
               . All rights reserved.
             </p>

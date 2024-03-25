@@ -7,32 +7,32 @@ import {
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-
-function ViewAllMaps() {
+let mapId;
+function ViewAllFarmersMaps(props) {
+  mapId = props.mapId;
+  console.log("famers mapid", mapId);
   const history = useHistory();
   const [geoState, setGeoState] = useState();
-  const ViewAllMaps = async () => {
-    try {
-      const response = await axios.get("http://localhost:2000/api/viewAllMaps");
-      //console.log(response.data)
-      let allGeoMaps = [];
 
-      response.data.map((maps) => {
-        console.log(maps.coordinates);
-        allGeoMaps.push({ coordinates: JSON.parse(maps.coordinates) });
+  const ViewAllFarmersMaps = () => {
+    axios
+      .get(`http://localhost:2000/api/displayAllFarmersMaps/${mapId}`)
+      .then((response) => {
+        //console.log(response.data)
+        let allGeoMaps = [];
+
+        response.data.map((maps) => {
+          console.log(maps.coordinates);
+          allGeoMaps.push({ coordinates: JSON.parse(maps.coordinates) });
+        });
+        setGeoState(allGeoMaps);
       });
-      setGeoState(allGeoMaps);
-    } catch (error) {
-      // Handle error
-      console.error("Error fetching all maps:", error);
-      // Further error handling if needed
-    }
   };
 
   useEffect(() => {
     let unmounted = false;
     setTimeout(() => {
-      if (!unmounted) return ViewAllMaps();
+      if (!unmounted) return ViewAllFarmersMaps();
     }, 50);
     return () => {
       unmounted = true;
@@ -44,8 +44,8 @@ function ViewAllMaps() {
   }, [geoState]);
 
   return (
-    <div className="App-map">
-      <h2>Total Maps: {geoState && geoState.length}</h2>
+    <div className="">
+      {/* <h2>Total Maps: {geoState && geoState.length}</h2> */}
       <LoadScript
         id="script-loader"
         googleMapsApiKey={process.env.REACT_APP_GOOGLEAPI}
@@ -53,7 +53,7 @@ function ViewAllMaps() {
         region="us"
       >
         <GoogleMap
-          mapContainerClassName="App-map"
+          mapContainerClassName="farmers-map"
           center={{ lat: -1.2830445729432605, lng: 36.82588725766635 }}
           zoom={9}
         >
@@ -93,9 +93,9 @@ function ViewAllMaps() {
             : null}
         </GoogleMap>
       </LoadScript>
-      <button onClick={() => history.push("/")}>Go Back</button>
+      {/* <button onClick={() => history.push("/")}>Go Back</button> */}
     </div>
   );
 }
 
-export default ViewAllMaps;
+export default ViewAllFarmersMaps;

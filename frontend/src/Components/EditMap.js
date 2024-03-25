@@ -62,7 +62,7 @@ function EditMap({
   const updateMap = async () => {
     await axios
       .post("http://localhost:2000/api/updateGeoMap", {
-        parentId: id,
+        mapId: id,
         coordinates: new_path,
       })
       .then((response) => {
@@ -86,7 +86,11 @@ function EditMap({
         region="us"
       >
         {paths.length > 1 ? (
-          <GoogleMap mapContainerClassName="App-map" center={center} zoom={12}>
+          <GoogleMap
+            mapContainerClassName="App-Edit "
+            center={center}
+            zoom={12}
+          >
             <Polygon
               path={point}
               editable
@@ -108,8 +112,18 @@ function EditMap({
       <br />
 
       <br />
-      <button onClick={updateMap}>Update</button>
-      <button onClick={close}>Close</button>
+      <button
+        class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+        onClick={updateMap}
+      >
+        Update
+      </button>
+      <button
+        class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+        onClick={close}
+      >
+        Close
+      </button>
     </div>
   );
 }

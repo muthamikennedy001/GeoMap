@@ -20,3 +20,21 @@
   height: 500px;
   width: 500px;
 }
+.App-Edit {
+  height: 500px;
+  width: full;
+}
+
+.farmers-map {
+  height: 500px; /* Fixed height */
+  width: 100%; /* Full width */
+}
+
+@media (max-width: 640px) {
+  .farmers-map {
+    /* Set a percentage-based height to maintain aspect ratio */
+    height: 50vh; /* Adjust the value as needed */
+    /* Allow the map to fill the width of its container */
+    width: 100%;
+  }
+}

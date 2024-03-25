@@ -1,30 +1,74 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import ViewAllFarmersMaps from "./ViewAllFarmersMaps";
 import axios from "axios";
-import { Link, useParams } from "react-router-dom/cjs/react-router-dom.min";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
-export default function OfficerDash() {
-  let { id } = useParams;
+export default function SoilDataNotAvailable({ farmParcelId, mapId }) {
+  const history = useHistory();
+  const [parcelID, setParcelID] = useState("");
+  const [temperature, setTemperature] = useState("");
+  const [humidity, setHumidity] = useState("");
+  const [moisture, setMoisture] = useState("");
+  const [soilType, setSoilType] = useState("");
+  const [pH, setPH] = useState("");
+  const [nitrogenLevel, setNitrogenLevel] = useState("");
+  const [potassiumLevel, setPotassiumLevel] = useState("");
+  const [phosphorusLevel, setPhosphorusLevel] = useState("");
+  let message = "";
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  const apiUrl = "http://127.0.0.1:2000/api/";
+  const submitSoilData = (e) => {
+    setParcelID(farmParcelId);
+    e.preventDefault();
 
-  const [farmers, setFarmers] = useState([]);
-
-  useEffect(() => {
     axios
-      .get(`${apiUrl}/officer/allFarmers`)
+      .get(`http://localhost:2000/api/checkParcel/${parcelID}`)
       .then((response) => {
-        setFarmers(response.data);
-        console.log(response);
+        if (response.data.exists) {
+          alert(
+            "Data for this parcel already exists. Please enter a different parcel ID."
+          );
+        } else {
+          // If data doesn't exist, proceed with inserting new data
+          axios
+            .post("http://localhost:2000/api/addSoilData", {
+              farmParcelId: parcelID,
+              temperature: temperature,
+              humidity: humidity,
+              moisture: moisture,
+              soilType: soilType,
+              pH: pH,
+              nitrogenLevel: nitrogenLevel,
+              potassiumLevel: potassiumLevel,
+              phosphorusLevel: phosphorusLevel,
+            })
+            .then((response) => {
+              if (response) {
+                message = response.data.msg; // Set message state to display success message
+                // Reset form fields
+                //setParcelID("");
+                setTemperature("");
+                setHumidity("");
+                setMoisture("");
+                setSoilType("");
+                setPH("");
+                setNitrogenLevel("");
+                setPotassiumLevel("");
+                setPhosphorusLevel("");
+                e.target.reset();
+                history.goBack();
+              }
+            })
+            .catch((err) => console.log(err));
+        }
       })
-      .catch((error) => {
-        console.error("Error fetching farmers:", error);
-      });
-  }, []);
+      .catch((error) => console.log(error));
+  };
+
   return (
     <>
       <div>
@@ -117,7 +161,7 @@ export default function OfficerDash() {
                 <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                   <div class="flex-1 px-3 bg-white divide-y space-y-1">
                     <ul class="space-y-2 pb-2">
-                      {/* <li>
+                      <li>
                         <form action="#" method="GET" class="lg:hidden">
                           <label for="mobile-search" class="sr-only">
                             Search
@@ -142,7 +186,7 @@ export default function OfficerDash() {
                             />
                           </div>
                         </form>
-                      </li> */}
+                      </li>
                       <li>
                         <a
                           href="#"
@@ -157,7 +201,7 @@ export default function OfficerDash() {
                             <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                             <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                           </svg>
-                          <span class="ml-3">DashBoard</span>
+                          <span class="ml-3">Dashboard</span>
                         </a>
                       </li>
                       {/* <li>
@@ -223,7 +267,7 @@ export default function OfficerDash() {
                             ></path>
                           </svg>
                           <span class="ml-3 flex-1 whitespace-nowrap">
-                            Users
+                            Farmers
                           </span>
                         </a>
                       </li>
@@ -287,7 +331,7 @@ export default function OfficerDash() {
                     <div class="flex-1 px-3 bg-white divide-y space-y-1">
                       <ul class="space-y-2 pb-2">
                         <li>
-                          {/* <form action="#" method="GET" class="lg:hidden">
+                          <form action="#" method="GET" class="lg:hidden">
                             <label for="mobile-search" class="sr-only">
                               Search
                             </label>
@@ -310,7 +354,7 @@ export default function OfficerDash() {
                                 placeholder="Search"
                               />
                             </div>
-                          </form> */}
+                          </form>
                         </li>
                         <li>
                           <a
@@ -326,7 +370,7 @@ export default function OfficerDash() {
                               <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                               <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                             </svg>
-                            <span class="ml-3">Home</span>
+                            <span class="ml-3">Dashboard</span>
                           </a>
                         </li>
                         {/* <li>
@@ -350,8 +394,8 @@ export default function OfficerDash() {
                               Pro
                             </span>
                           </a>
-                        </li>
-                        <li>
+                        </li> */}
+                        {/* <li>
                           <a
                             href="#"
                             target="_blank"
@@ -457,19 +501,220 @@ export default function OfficerDash() {
           >
             <main>
               <div class="pt-6 px-4">
-                {/* <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
                   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8  2xl:col-span-2">
                     <div class="flex items-center justify-between mb-4">
                       <div class="flex-shrink-0">
                         <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
-                          $45,385
+                          Mapped Farm
+                        </span>
+                        {/* <h3 class="text-base font-normal text-gray-500">
+                          Sales this week
+                        </h3> */}
+                      </div>
+                    </div>
+                    <div id="main-chart">
+                      <ViewAllFarmersMaps mapId={mapId} />
+                    </div>
+                  </div>
+                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+                    <div className="flex flex-col mt-8">
+                      <div className="overflow-x-auto rounded-lg ">
+                        <div className="align-middle inline-block min-w-full  ">
+                          <div className="shadow overflow-hidden sm:rounded-lg">
+                            <div class="flex w-full justify-center py-10 items-center bg-white">
+                              <form class="bg-white" onSubmit={submitSoilData}>
+                                <h1 class="text-gray-800 font-bold text-2xl mb-1">
+                                  Add Farm Parcel {farmParcelId}
+                                </h1>
+                                <p class="mb-7"></p>
+                                <div class="flex flex-wrap">
+                                  {/* <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      Parcel ID
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+                                      type="text"
+                                      placeholder="Parcel ID"
+                                      id="parcelID"
+                                      onChange={(e) =>
+                                        setParcelID(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div> */}
+                                  <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      Temperature
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                      type="number"
+                                      placeholder="Temperature (°C)"
+                                      id="temperature"
+                                      min="-100"
+                                      max="100"
+                                      onChange={(e) =>
+                                        setTemperature(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      Humidity
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                      type="number"
+                                      placeholder="Humidity (%)"
+                                      id="humdity"
+                                      min="0"
+                                      max="100"
+                                      onChange={(e) =>
+                                        setHumidity(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      Moisture
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                      type="number"
+                                      placeholder="Moisture (%)"
+                                      id="moisture"
+                                      min="0"
+                                      max="100"
+                                      onChange={(e) =>
+                                        setMoisture(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      Soil Type
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                      type="text"
+                                      placeholder="Soil Type"
+                                      id="soilType"
+                                      onChange={(e) =>
+                                        setSoilType(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      pH
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                      type="number"
+                                      placeholder="pH Level"
+                                      step="0.1"
+                                      id="pH"
+                                      min="0.0"
+                                      max="14.0"
+                                      onChange={(e) => setPH(e.target.value)}
+                                      required
+                                    />
+                                  </div>
+                                  <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      Nitrogen Level
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                      type="number"
+                                      placeholder="Nitrogen Level (%)"
+                                      id="nitrogenLevel"
+                                      min="0.0"
+                                      max="1000.0"
+                                      onChange={(e) =>
+                                        setNitrogenLevel(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      Potassium Level
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                      type="number"
+                                      placeholder="Potassium Level (%)"
+                                      id="potassiumLevel"
+                                      min="0.0"
+                                      max="1000.0"
+                                      onChange={(e) =>
+                                        setPotassiumLevel(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                  <div class="w-full md:w-1/2 px-3">
+                                    <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2">
+                                      Phosphorus Level
+                                    </label>
+                                    <input
+                                      class="appearance-none block w-full bg-gray-200 text-gray-700 border rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                                      type="number"
+                                      placeholder="Phosphorus Level (%)"
+                                      id="phosphorusLevel"
+                                      min="0.0"
+                                      max="1000.0"
+                                      onChange={(e) =>
+                                        setPhosphorusLevel(e.target.value)
+                                      }
+                                      required
+                                    />
+                                  </div>
+                                </div>
+                                <button
+                                  type="submit"
+                                  class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4 "
+                                  disabled={
+                                    temperature === "" ||
+                                    humidity === "" ||
+                                    moisture === "" ||
+                                    soilType === "" ||
+                                    pH === "" ||
+                                    nitrogenLevel === "" ||
+                                    potassiumLevel === "" ||
+                                    phosphorusLevel === ""
+                                  }
+                                >
+                                  Save Soil Data
+                                </button>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* <div class="mt-4 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+                          2,340
                         </span>
                         <h3 class="text-base font-normal text-gray-500">
-                          Sales this week
+                          New products this week
                         </h3>
                       </div>
-                      <div class="flex items-center justify-end flex-1 text-green-500 text-base font-bold">
-                        12.5%
+                      <div class="ml-5 w-0 flex items-center justify-end flex-1 text-green-500 text-base font-bold">
+                        14.6%
                         <svg
                           class="w-5 h-5"
                           fill="currentColor"
@@ -484,244 +729,64 @@ export default function OfficerDash() {
                         </svg>
                       </div>
                     </div>
-                    <div id="main-chart"></div>
                   </div>
                   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
-                    <div class="mb-4 flex items-center justify-between">
-                      <div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">
-                          Latest Transactions
-                        </h3>
-                        <span class="text-base font-normal text-gray-500">
-                          This is a list of latest transactions
-                        </span>
-                      </div>
+                    <div class="flex items-center">
                       <div class="flex-shrink-0">
-                        <a
-                          href="#"
-                          class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg p-2"
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+                          5,355
+                        </span>
+                        <h3 class="text-base font-normal text-gray-500">
+                          Visitors this week
+                        </h3>
+                      </div>
+                      <div class="ml-5 w-0 flex items-center justify-end flex-1 text-green-500 text-base font-bold">
+                        32.9%
+                        <svg
+                          class="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
-                          View all
-                        </a>
+                          <path
+                            fill-rule="evenodd"
+                            d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
                       </div>
                     </div>
-                    <div class="flex flex-col mt-8">
-                      <div class="overflow-x-auto rounded-lg">
-                        <div class="align-middle inline-block min-w-full">
-                          <div class="shadow overflow-hidden sm:rounded-lg">
-                            <table class="min-w-full divide-y divide-gray-200">
-                              <thead class="bg-gray-50">
-                                <tr>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Transaction
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Date & Time
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Amount
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody class="bg-white">
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      Bonnie Green
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 23 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2300
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment refund to{" "}
-                                    <span class="font-semibold">#00910</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 23 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    -$670
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment failed from{" "}
-                                    <span class="font-semibold">#087651</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 18 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $234
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment from{" "}
-                                    <span class="font-semibold">Lana Byrd</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 15 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $5000
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">Jese Leos</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 15 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2300
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      THEMESBERG LLC
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 11 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $560
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      Lana Lysle
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 6 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $1437
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
+                  </div>
+                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+                          385
+                        </span>
+                        <h3 class="text-base font-normal text-gray-500">
+                          User signups this week
+                        </h3>
+                      </div>
+                      <div class="ml-5 w-0 flex items-center justify-end flex-1 text-red-500 text-base font-bold">
+                        -2.7%
+                        <svg
+                          class="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
                       </div>
                     </div>
                   </div>
                 </div> */}
-                <div class="mt-1 w-full grid grid-cols-1 md:grid-cols-1 xl:grid-cols-1 gap-4">
-                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
-                    <div
-                      class="relative flex"
-                      data-twe-input-wrapper-init
-                      data-twe-input-group-ref
-                    >
-                      <input
-                        type="search"
-                        class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[twe-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-white dark:placeholder:text-neutral-300 dark:autofill:shadow-autofill dark:peer-focus:text-primary [&:not([data-twe-input-placeholder-active])]:placeholder:opacity-0"
-                        placeholder="Search Farmer By Id No"
-                        aria-label="Search Farmer By Id No"
-                        id="exampleFormControlInput"
-                        aria-describedby="basic-addon1"
-                      />
-                      <label
-                        for="exampleFormControlInput"
-                        class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[twe-input-state-active]:-translate-y-[0.9rem] peer-data-[twe-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
-                      >
-                        Search Farmer By Id No
-                      </label>
-                      <button
-                        class="relative z-[2] -ms-0.5 flex items-center rounded-e bg-primary px-5  text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
-                        type="button"
-                        id="button-addon1"
-                        data-twe-ripple-init
-                        data-twe-ripple-color="light"
-                      >
-                        <span class="[&>svg]:h-5 [&>svg]:w-5">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.5"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                            />
-                          </svg>
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
                 <div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
-                  <div class="bg-white shadow rounded-lg mb-4 p-4 sm:p-6 h-full">
-                    <div class="flex items-center justify-between mb-4">
-                      <h3 class="text-xl font-bold leading-none text-gray-900">
-                        All Farmers
-                      </h3>
-                      <a
-                        href="#"
-                        class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg inline-flex items-center p-2"
-                      >
-                        View all
-                      </a>
-                    </div>
-                    <div className="flow-root">
-                      <ul role="list" className="divide-y divide-gray-200">
-                        {farmers.map((farmer) => (
-                          <li key={farmer.id} className="py-3 sm:py-4">
-                            <div className="flex items-center space-x-4">
-                              <div className="flex-shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                                  {farmer.username.charAt(0)}
-                                </div>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">
-                                  {farmer.username}
-                                </p>
-                                <p className="text-sm text-gray-500 truncate">
-                                  ID: {farmer.idno}
-                                </p>
-                              </div>
-                              <div>
-                                <button className="text-sm font-semibold text-gray-900">
-                                  <Link to={`/farmer/${farmer.idno}`}>
-                                    View Details
-                                  </Link>
-                                </button>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
+                  {/* <FarmerListing idno={idno} /> */}
                   {/* <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                     <h3 class="text-xl leading-none font-bold text-gray-900 mb-10">
                       Acquisition Overview

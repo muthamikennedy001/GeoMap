@@ -22,6 +22,7 @@ export default function LogOut() {
         const data = await response.json();
         console.log(data);
         localStorage.removeItem("token");
+        localStorage.clear();
         window.location.href = "/";
       } catch (error) {
         // Handle network errors or other exceptions

@@ -1,30 +1,13 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Link, useParams } from "react-router-dom/cjs/react-router-dom.min";
+import React, { useState } from "react";
+import { useParams } from "react-router-dom/cjs/react-router-dom.min";
+import FarmerListing from "./FarmerListing";
+import ViewAllFarmersMaps from "./ViewAllFarmersMaps";
 
-export default function OfficerDash() {
-  let { id } = useParams;
-
+export default function SoilDataAvailable({ soilData, mapId }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
-
-  const apiUrl = "http://127.0.0.1:2000/api/";
-
-  const [farmers, setFarmers] = useState([]);
-
-  useEffect(() => {
-    axios
-      .get(`${apiUrl}/officer/allFarmers`)
-      .then((response) => {
-        setFarmers(response.data);
-        console.log(response);
-      })
-      .catch((error) => {
-        console.error("Error fetching farmers:", error);
-      });
-  }, []);
   return (
     <>
       <div>
@@ -117,7 +100,7 @@ export default function OfficerDash() {
                 <div class="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
                   <div class="flex-1 px-3 bg-white divide-y space-y-1">
                     <ul class="space-y-2 pb-2">
-                      {/* <li>
+                      <li>
                         <form action="#" method="GET" class="lg:hidden">
                           <label for="mobile-search" class="sr-only">
                             Search
@@ -142,7 +125,7 @@ export default function OfficerDash() {
                             />
                           </div>
                         </form>
-                      </li> */}
+                      </li>
                       <li>
                         <a
                           href="#"
@@ -157,31 +140,31 @@ export default function OfficerDash() {
                             <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z"></path>
                             <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z"></path>
                           </svg>
-                          <span class="ml-3">DashBoard</span>
+                          <span class="ml-3">Home</span>
                         </a>
                       </li>
                       {/* <li>
-                        <a
-                          href="#"
-                          target="_blank"
-                          class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group "
+                      <a
+                        href="#"
+                        target="_blank"
+                        class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group "
+                      >
+                        <svg
+                          class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
-                          <svg
-                            class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                          </svg>
-                          <span class="ml-3 flex-1 whitespace-nowrap">
-                            Kanban
-                          </span>
-                          <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
-                            Pro
-                          </span>
-                        </a>
-                      </li> */}
+                          <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                        <span class="ml-3 flex-1 whitespace-nowrap">
+                          Kanban
+                        </span>
+                        <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
+                          Pro
+                        </span>
+                      </a>
+                    </li> */}
                       {/* <li>
                         <a
                           href="#"
@@ -222,35 +205,70 @@ export default function OfficerDash() {
                               clip-rule="evenodd"
                             ></path>
                           </svg>
-                          <span class="ml-3 flex-1 whitespace-nowrap">
-                            Users
+                          <span class="ml-1 flex-1 whitespace-nowrap">
+                            Farmers
                           </span>
                         </a>
                       </li>
                       {/* <li>
-                        <a
-                          href="#"
-                          class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group "
+                      <a
+                        href="#"
+                        class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group "
+                      >
+                        <svg
+                          class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
-                          <svg
-                            class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
-                              clip-rule="evenodd"
-                            ></path>
-                          </svg>
-                          <span class="ml-3 flex-1 whitespace-nowrap">
-                            Products
-                          </span>
-                        </a>
-                      </li> */}
+                          <path
+                            fill-rule="evenodd"
+                            d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                        <span class="ml-3 flex-1 whitespace-nowrap">
+                          Products
+                        </span>
+                      </a>
+                    </li> */}
                     </ul>
                     <div class="space-y-2 pt-2">
+                      {/* <a
+                        href="#"
+                        target="_blank"
+                        class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2"
+                      >
+                        <svg
+                          class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                          <path
+                            fill-rule="evenodd"
+                            d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
+                        <span class="ml-3">Documentation</span>
+                      </a> */}
+                      {/* <a
+                        href="#"
+                        target="_blank"
+                        class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2"
+                      >
+                        <svg
+                          class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
+                        </svg>
+                        <span class="ml-3">Components</span>
+                      </a> */}
                       <a
                         href="#"
                         target="_blank"
@@ -287,7 +305,7 @@ export default function OfficerDash() {
                     <div class="flex-1 px-3 bg-white divide-y space-y-1">
                       <ul class="space-y-2 pb-2">
                         <li>
-                          {/* <form action="#" method="GET" class="lg:hidden">
+                          <form action="#" method="GET" class="lg:hidden">
                             <label for="mobile-search" class="sr-only">
                               Search
                             </label>
@@ -310,7 +328,7 @@ export default function OfficerDash() {
                                 placeholder="Search"
                               />
                             </div>
-                          </form> */}
+                          </form>
                         </li>
                         <li>
                           <a
@@ -330,50 +348,50 @@ export default function OfficerDash() {
                           </a>
                         </li>
                         {/* <li>
-                          <a
-                            href="#"
-                            target="_blank"
-                            class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group "
+                        <a
+                          href="#"
+                          target="_blank"
+                          class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group "
+                        >
+                          <svg
+                            class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            <svg
-                              class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                            </svg>
-                            <span class="ml-3 flex-1 whitespace-nowrap">
-                              Kanban
-                            </span>
-                            <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
-                              Pro
-                            </span>
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            href="#"
-                            target="_blank"
-                            class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group "
+                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                          </svg>
+                          <span class="ml-3 flex-1 whitespace-nowrap">
+                            Kanban
+                          </span>
+                          <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
+                            Pro
+                          </span>
+                        </a>
+                      </li> */}
+                        {/* <li>
+                        <a
+                          href="#"
+                          target="_blank"
+                          class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 flex items-center p-2 group "
+                        >
+                          <svg
+                            class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
                           >
-                            <svg
-                              class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
-                              fill="currentColor"
-                              viewBox="0 0 20 20"
-                              xmlns="http://www.w3.org/2000/svg"
-                            >
-                              <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"></path>
-                              <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
-                            </svg>
-                            <span class="ml-3 flex-1 whitespace-nowrap">
-                              Inbox
-                            </span>
-                            <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
-                              Pro
-                            </span>
-                          </a>
-                        </li> */}
+                            <path d="M8.707 7.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l2-2a1 1 0 00-1.414-1.414L11 7.586V3a1 1 0 10-2 0v4.586l-.293-.293z"></path>
+                            <path d="M3 5a2 2 0 012-2h1a1 1 0 010 2H5v7h2l1 2h4l1-2h2V5h-1a1 1 0 110-2h1a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V5z"></path>
+                          </svg>
+                          <span class="ml-3 flex-1 whitespace-nowrap">
+                            Inbox
+                          </span>
+                          <span class="bg-gray-200 text-gray-800 ml-3 text-sm font-medium inline-flex items-center justify-center px-2 rounded-full">
+                            Pro
+                          </span>
+                        </a>
+                      </li> */}
                         <li>
                           <a
                             href="#"
@@ -391,7 +409,7 @@ export default function OfficerDash() {
                                 clip-rule="evenodd"
                               ></path>
                             </svg>
-                            <span class="ml-3 flex-1 whitespace-nowrap">
+                            <span class="ml-1 flex-1 whitespace-nowrap ">
                               Farmers
                             </span>
                           </a>
@@ -420,6 +438,41 @@ export default function OfficerDash() {
                         </li> */}
                       </ul>
                       <div class="space-y-2 pt-2">
+                        {/* <a
+                          href="#"
+                          target="_blank"
+                          class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2"
+                        >
+                          <svg
+                            class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path
+                              fill-rule="evenodd"
+                              d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+                              clip-rule="evenodd"
+                            ></path>
+                          </svg>
+                          <span class="ml-3">Documentation</span>
+                        </a> */}
+                        {/* <a
+                        href="#"
+                        target="_blank"
+                        class="text-base text-gray-900 font-normal rounded-lg hover:bg-gray-100 group transition duration-75 flex items-center p-2"
+                      >
+                        <svg
+                          class="w-6 h-6 text-gray-500 flex-shrink-0 group-hover:text-gray-900 transition duration-75"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
+                        </svg>
+                        <span class="ml-3">Components</span>
+                      </a> */}
                         <a
                           href="#"
                           target="_blank"
@@ -457,19 +510,98 @@ export default function OfficerDash() {
           >
             <main>
               <div class="pt-6 px-4">
-                {/* <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
+                <div class="w-full grid grid-cols-1 xl:grid-cols-2 2xl:grid-cols-3 gap-4">
                   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8  2xl:col-span-2">
                     <div class="flex items-center justify-between mb-4">
                       <div class="flex-shrink-0">
                         <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
-                          $45,385
+                          Mapped Farm For The Farmer
+                        </span>
+                        {/* <h3 class="text-base font-normal text-gray-500">
+                          Sales this week
+                        </h3> */}
+                      </div>
+                    </div>
+                    <div id="main-chart">
+                      <ViewAllFarmersMaps mapId={mapId} />
+                    </div>
+                  </div>
+                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+                    <div class="mb-4 flex items-center justify-between">
+                      <div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">
+                          Soil Data For the Mapped Parcel
+                        </h3>
+                        {/* <span class="text-base font-normal text-gray-500">
+                          This is a list of latest transactions
+                        </span> */}
+                      </div>
+                      <div class="flex-shrink-0">
+                        <a
+                          href="#"
+                          class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg p-2"
+                        >
+                          Update
+                        </a>
+                      </div>
+                    </div>
+                    <div className="flex flex-col mt-8">
+                      <div className="overflow-x-auto rounded-lg">
+                        <div className="align-middle inline-block min-w-full">
+                          <div className="shadow overflow-hidden sm:rounded-lg">
+                            <table className="min-w-full divide-y divide-gray-200">
+                              <thead className="bg-gray-50">
+                                <tr>
+                                  <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Soil Property
+                                  </th>
+                                  <th className="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Amount
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody className="bg-white">
+                                {soilData &&
+                                  Object.entries(soilData).map(
+                                    ([property, amount], index) => (
+                                      <tr
+                                        key={index}
+                                        className={
+                                          index % 2 === 0
+                                            ? "bg-white"
+                                            : "bg-gray-50"
+                                        }
+                                      >
+                                        <td className="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
+                                          {property}
+                                        </td>
+                                        <td className="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
+                                          {amount}
+                                        </td>
+                                      </tr>
+                                    )
+                                  )}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {/* <div class="mt-4 w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+                          2,340
                         </span>
                         <h3 class="text-base font-normal text-gray-500">
-                          Sales this week
+                          New products this week
                         </h3>
                       </div>
-                      <div class="flex items-center justify-end flex-1 text-green-500 text-base font-bold">
-                        12.5%
+                      <div class="ml-5 w-0 flex items-center justify-end flex-1 text-green-500 text-base font-bold">
+                        14.6%
                         <svg
                           class="w-5 h-5"
                           fill="currentColor"
@@ -484,244 +616,64 @@ export default function OfficerDash() {
                         </svg>
                       </div>
                     </div>
-                    <div id="main-chart"></div>
                   </div>
                   <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
-                    <div class="mb-4 flex items-center justify-between">
-                      <div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">
-                          Latest Transactions
-                        </h3>
-                        <span class="text-base font-normal text-gray-500">
-                          This is a list of latest transactions
-                        </span>
-                      </div>
+                    <div class="flex items-center">
                       <div class="flex-shrink-0">
-                        <a
-                          href="#"
-                          class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg p-2"
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+                          5,355
+                        </span>
+                        <h3 class="text-base font-normal text-gray-500">
+                          Visitors this week
+                        </h3>
+                      </div>
+                      <div class="ml-5 w-0 flex items-center justify-end flex-1 text-green-500 text-base font-bold">
+                        32.9%
+                        <svg
+                          class="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
-                          View all
-                        </a>
+                          <path
+                            fill-rule="evenodd"
+                            d="M5.293 7.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L6.707 7.707a1 1 0 01-1.414 0z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
                       </div>
                     </div>
-                    <div class="flex flex-col mt-8">
-                      <div class="overflow-x-auto rounded-lg">
-                        <div class="align-middle inline-block min-w-full">
-                          <div class="shadow overflow-hidden sm:rounded-lg">
-                            <table class="min-w-full divide-y divide-gray-200">
-                              <thead class="bg-gray-50">
-                                <tr>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Transaction
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Date & Time
-                                  </th>
-                                  <th
-                                    scope="col"
-                                    class="p-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                  >
-                                    Amount
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody class="bg-white">
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      Bonnie Green
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 23 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2300
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment refund to{" "}
-                                    <span class="font-semibold">#00910</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 23 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    -$670
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment failed from{" "}
-                                    <span class="font-semibold">#087651</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 18 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $234
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment from{" "}
-                                    <span class="font-semibold">Lana Byrd</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 15 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $5000
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">Jese Leos</span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 15 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $2300
-                                  </td>
-                                </tr>
-                                <tr class="bg-gray-50">
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900 rounded-lg rounded-left">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      THEMESBERG LLC
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 11 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $560
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-900">
-                                    Payment from{" "}
-                                    <span class="font-semibold">
-                                      Lana Lysle
-                                    </span>
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-normal text-gray-500">
-                                    Apr 6 ,2021
-                                  </td>
-                                  <td class="p-4 whitespace-nowrap text-sm font-semibold text-gray-900">
-                                    $1437
-                                  </td>
-                                </tr>
-                              </tbody>
-                            </table>
-                          </div>
-                        </div>
+                  </div>
+                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
+                    <div class="flex items-center">
+                      <div class="flex-shrink-0">
+                        <span class="text-2xl sm:text-3xl leading-none font-bold text-gray-900">
+                          385
+                        </span>
+                        <h3 class="text-base font-normal text-gray-500">
+                          User signups this week
+                        </h3>
+                      </div>
+                      <div class="ml-5 w-0 flex items-center justify-end flex-1 text-red-500 text-base font-bold">
+                        -2.7%
+                        <svg
+                          class="w-5 h-5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill-rule="evenodd"
+                            d="M14.707 12.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l2.293-2.293a1 1 0 011.414 0z"
+                            clip-rule="evenodd"
+                          ></path>
+                        </svg>
                       </div>
                     </div>
                   </div>
                 </div> */}
-                <div class="mt-1 w-full grid grid-cols-1 md:grid-cols-1 xl:grid-cols-1 gap-4">
-                  <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
-                    <div
-                      class="relative flex"
-                      data-twe-input-wrapper-init
-                      data-twe-input-group-ref
-                    >
-                      <input
-                        type="search"
-                        class="peer block min-h-[auto] w-full rounded border-0 bg-transparent px-3 py-[0.32rem] leading-[1.6] outline-none transition-all duration-200 ease-linear focus:placeholder:opacity-100 peer-focus:text-primary data-[twe-input-state-active]:placeholder:opacity-100 motion-reduce:transition-none dark:text-white dark:placeholder:text-neutral-300 dark:autofill:shadow-autofill dark:peer-focus:text-primary [&:not([data-twe-input-placeholder-active])]:placeholder:opacity-0"
-                        placeholder="Search Farmer By Id No"
-                        aria-label="Search Farmer By Id No"
-                        id="exampleFormControlInput"
-                        aria-describedby="basic-addon1"
-                      />
-                      <label
-                        for="exampleFormControlInput"
-                        class="pointer-events-none absolute left-3 top-0 mb-0 max-w-[90%] origin-[0_0] truncate pt-[0.37rem] leading-[1.6] text-neutral-500 transition-all duration-200 ease-out peer-focus:-translate-y-[0.9rem] peer-focus:scale-[0.8] peer-focus:text-primary peer-data-[twe-input-state-active]:-translate-y-[0.9rem] peer-data-[twe-input-state-active]:scale-[0.8] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
-                      >
-                        Search Farmer By Id No
-                      </label>
-                      <button
-                        class="relative z-[2] -ms-0.5 flex items-center rounded-e bg-primary px-5  text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
-                        type="button"
-                        id="button-addon1"
-                        data-twe-ripple-init
-                        data-twe-ripple-color="light"
-                      >
-                        <span class="[&>svg]:h-5 [&>svg]:w-5">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="1.5"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
-                            />
-                          </svg>
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </div>
                 <div class="grid grid-cols-1 2xl:grid-cols-2 xl:gap-4 my-4">
-                  <div class="bg-white shadow rounded-lg mb-4 p-4 sm:p-6 h-full">
-                    <div class="flex items-center justify-between mb-4">
-                      <h3 class="text-xl font-bold leading-none text-gray-900">
-                        All Farmers
-                      </h3>
-                      <a
-                        href="#"
-                        class="text-sm font-medium text-cyan-600 hover:bg-gray-100 rounded-lg inline-flex items-center p-2"
-                      >
-                        View all
-                      </a>
-                    </div>
-                    <div className="flow-root">
-                      <ul role="list" className="divide-y divide-gray-200">
-                        {farmers.map((farmer) => (
-                          <li key={farmer.id} className="py-3 sm:py-4">
-                            <div className="flex items-center space-x-4">
-                              <div className="flex-shrink-0">
-                                <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                                  {farmer.username.charAt(0)}
-                                </div>
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-sm font-medium text-gray-900 truncate">
-                                  {farmer.username}
-                                </p>
-                                <p className="text-sm text-gray-500 truncate">
-                                  ID: {farmer.idno}
-                                </p>
-                              </div>
-                              <div>
-                                <button className="text-sm font-semibold text-gray-900">
-                                  <Link to={`/farmer/${farmer.idno}`}>
-                                    View Details
-                                  </Link>
-                                </button>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
+                  {/* <FarmerListing idno={idno} /> */}
                   {/* <div class="bg-white shadow rounded-lg p-4 sm:p-6 xl:p-8 ">
                     <h3 class="text-xl leading-none font-bold text-gray-900 mb-10">
                       Acquisition Overview

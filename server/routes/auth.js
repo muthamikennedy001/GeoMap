@@ -1,10 +1,15 @@
 const express = require("express");
 const router = express.Router();
+const sequelize = require("../sequelize");
 
 var http = require("http");
 const Farmer = require("../models/user");
 const Distributor = require("../models/distributor");
 const Officer = require("../models/officer");
+const SoilData = require("../models/soildata");
+const Store = require("../models/store");
+const Store2 = require("../models/store2");
+const FarmParcel = require("../models/farmParcel");
 
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
@@ -17,6 +22,25 @@ const blacklistedTokens = new Set();
 function blacklistToken(token) {
   blacklistedTokens.add(token);
 }
+
+Farmer.hasOne(Store, {
+  foreignKey: "idno",
+  as: "store",
+});
+Store.belongsTo(Farmer, { foreignKey: "idno", as: "farmer" });
+Store.hasOne(FarmParcel, {
+  foreignKey: "mapId",
+  as: "farmparcels",
+});
+FarmParcel.belongsTo(Store, { foreignKey: "mapId" });
+FarmParcel.hasOne(SoilData, {
+  foreignKey: "farmParcelId",
+  as: "soildata",
+});
+SoilData.belongsTo(FarmParcel, {
+  foreignKey: "farmParcelId",
+  as: "parcelData",
+});
 
 async function createFarmer(username, idno, password, res) {
   try {
@@ -89,6 +113,9 @@ async function findUser(idno, password, res, req) {
             type: "farmer",
             token: token,
             data: farmer.username,
+            idno: farmer.idno,
+
+            // Add more properties as needed
           });
         } catch (error) {
           return res.status(500).json({ msg: "Internal server error" });
@@ -200,12 +227,12 @@ router.post("/user/farmer/generateToken", async (req, res) => {
       red: "/dashboard",
       type: "farmer",
       data: username,
+      idno: idno,
     });
   } catch (error) {
     res.status(401).send(error);
   }
 });
-
 router.post("/user/officer/generateToken", async (req, res) => {
   // Validate User Here
   // Then generate JWT Token
@@ -320,6 +347,111 @@ router.get("/user/logout", (req, res) => {
   const token = authorizationHeader.split(" ")[1];
   blacklistToken(token);
   return res.json({ msg: "Logout successfully" });
+});
+
+// Define a GET endpoint to query stores associated with a specific farmer
+router.get("/stores/:farmerIdNo", async (req, res) => {
+  try {
+    const farmerIdNo = req.params.farmerIdNo;
+
+    const store = await Store.findAll({
+      where: { idno: farmerIdNo },
+    });
+
+    if (store.length === 0) {
+      // No store found for the given farmerIdNo
+      console.log("No store found for farmer ID:", farmerIdNo);
+      return res
+        .status(404)
+        .json({ message: "No store found for the given farmer ID" });
+    }
+
+    // Log the farmer and associated store
+    console.log("Farmer and Store:", store);
+
+    // Send the store data as a response
+    return res.status(200).json(store);
+  } catch (error) {
+    console.error("Error fetching farmer and store:", error);
+    return res.status(500).send("Internal server error");
+  }
+});
+
+router.get("/soildata/:farmParcelId", async (req, res) => {
+  try {
+    const farmParcelId = req.params.farmParcelId;
+
+    const soilData = await SoilData.findOne({
+      // include: [
+      //   {
+      //     model: FarmParcel,
+      //     as: "parcelData",
+      //   },
+      // ],
+      where: { farmParcelId: farmParcelId },
+    });
+
+    // Log the farmer and associated store
+    console.log("Farmer and Store:", soilData);
+
+    // Send the farmer data as a response
+    return res.status(200).json(soilData);
+  } catch (error) {
+    console.error("Error fetching soil data:", error);
+    return res.status(500).send("Internal server error");
+  }
+});
+
+router.get("/officer/allFarmers", async (req, res) => {
+  try {
+    const farmers = await Farmer.findAll({});
+
+    // Log the farmer and associated store
+    console.log("Farmer and Store:", farmers);
+
+    // Send the farmer data as a response
+    return res.status(200).json(farmers);
+  } catch (error) {
+    console.error("Error fetching farmer and store:", error);
+    return res.status(500).send("Internal server error");
+  }
+});
+
+router.get("/parcel/:mapId", async (req, res) => {
+  try {
+    const mapId = req.params.mapId;
+
+    const farmparcel = await FarmParcel.findOne({
+      where: { mapId: mapId },
+    });
+
+    // Log the farmer and associated store
+    console.log("Farm Parcel:", farmparcel);
+
+    // Send the farmer data as a response
+    return res.status(200).json(farmparcel);
+  } catch (error) {
+    console.error("Error farmparcel:", error);
+    return res.status(500).send("Internal server error");
+  }
+});
+router.get("/getAllFarmersMaps/:idNo", async (req, res) => {
+  try {
+    const idNo = req.params.idNo;
+
+    const farmersMap = await Store.findAll({
+      where: { idNo: idNo },
+    });
+
+    // Log the farmer and associated store
+    console.log("Farm Parcel:", farmersMap);
+
+    // Send the farmer data as a response
+    return res.status(200).json(farmersMap);
+  } catch (error) {
+    console.error("Error farmparcel:", error);
+    return res.status(500).send("Internal server error");
+  }
 });
 
 module.exports = router;

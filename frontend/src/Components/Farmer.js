@@ -46,6 +46,8 @@ export default function FarmerSignup() {
         console.log("Login successful");
         localStorage.setItem("token", data.token);
         localStorage.setItem("username", data.data);
+        localStorage.setItem("idno", data.idno);
+        console.log(localStorage.setItem("username", data.data));
         window.location.href = data.red + "/" + data.type;
       } else {
         // Handle login failure, e.g., display error message

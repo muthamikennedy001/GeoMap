@@ -13,6 +13,8 @@ const {
   viewAllMaps,
   addSoilData,
   checkParcel,
+  displayAllFarmersMaps,
+  //getAllFarmersMaps,
 } = require("../controllers/mapController");
 
 router.post("/addName", addName);
@@ -26,6 +28,8 @@ router.get("/getAllCoordinateMaps", getAllCoordinateMaps);
 router.delete("/deleteMapName/:id", deleteMapName);
 router.get("/viewAllMaps", viewAllMaps);
 router.post("/addSoilData", addSoilData);
-router.get("/checkParcel/:parcelID", checkParcel);
+router.get("/checkParcel/:id", checkParcel);
+router.get("/displayAllFarmersMaps/:mapId", displayAllFarmersMaps);
+//router.get("/getAllFarmersMaps/:idNo", getAllFarmersMaps);
 
 module.exports = router;
